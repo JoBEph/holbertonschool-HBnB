@@ -5,7 +5,7 @@ class Config:
     """Base configuration for the secret key and debug"""
 
     SECRET_KEY = os.environ.get("SECRET_KEY") or "default_secret_key"
-    Debug = False
+    DEBUG = False
 
 
 class DevelopmentConfig(Config):
@@ -19,13 +19,7 @@ class TestingConfig(Config):
     DEBUG = True
 
 
-class ProductionConfig(Config):
-    """Configuration for the production environment"""
-    DEBUG = False
-
-
 config = {
     "development": DevelopmentConfig,
     "testing": TestingConfig,
-    "production": ProductionConfig
 }
