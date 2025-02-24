@@ -4,7 +4,7 @@ import os
 class Config:
     """Base configuration for the secret key and debug"""
 
-    SECRET_KEY = os.environ.get("SECRET_KEY") or "secret_key"
+    SECRET_KEY = os.environ.get("SECRET_KEY") or "default_secret_key"
     Debug = False
 
 
