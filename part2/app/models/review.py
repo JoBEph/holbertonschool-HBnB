@@ -1,5 +1,7 @@
 import uuid
 from datetime import datetime
+from place import Place
+from user import User
 
 
 class Review:
@@ -17,14 +19,13 @@ class Review:
         if not self.text:
             raise ValueError('Error: Text is empty.')
         if not (1 <= self.rating <= 5):
-            raise ValueError('Error: Choose beetween 1 and 5')
-        if not self.place:
+            raise ValueError('Error: Choose between 1 and 5')
+        if not isinstance(self.place, Place):
             raise ValueError('Error: Place does not exist.')
-        if not self.user:
+        if not isinstance(self.user, User):
             raise ValueError('Error: User does not exist.')
 
     def place_exist(self, place):
-
         print(f'Place {place} exists')
         return True
 
@@ -43,3 +44,9 @@ class Review:
             self.rating = rating
             self.updated_at = datetime.now()
             self.validate()
+
+    def __str__(self):
+        return (
+            f'Review: (id={self.id}, text={self.text}, rating={self.rating}, '
+            f'place={self.place.name}, user={self.user.username})'
+        )
