@@ -25,6 +25,7 @@ class Review:
         if not isinstance(self.user, User):
             raise ValueError('Error: User does not exist.')
 
+
     def place_exist(self, place):
         print(f'Place {place} exists')
         return True
