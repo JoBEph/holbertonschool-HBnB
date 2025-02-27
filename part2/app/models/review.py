@@ -1,18 +1,15 @@
-import uuid
-from datetime import datetime
+from app.models.base_class import BaseClass
 from place import Place
 from user import User
 
 
-class Review:
+class Review(BaseClass):
     def __init__(self, text, rating, place, user):
-        self.id = str(uuid.uuid4())
+        super().__init__()
         self.text = text
         self.rating = rating
         self.place = place
         self.user = user
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
         self.validate()
 
     def validate(self):
@@ -25,10 +22,6 @@ class Review:
         if not isinstance(self.user, User):
             raise ValueError('Error: User does not exist.')
 
-<<<<<<< HEAD
-
-=======
->>>>>>> main
     def place_exist(self, place):
         print(f'Place {place} exists')
         return True
