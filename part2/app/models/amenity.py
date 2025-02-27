@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+"""This module for the Class Amenity"""
 from datetime import datetime
 import uuid
 
@@ -6,16 +7,8 @@ Base_class = __import__("base_class").Baseclass
 
 
 class Amenity(Base_class):
+    """To create attibutes for the Class"""
     def __init__(self, name, *args, **kwargs):
-        """
-        Initialize a new instance of Amenity with the necessary attributes.
-
-        Args:
-            name (str): The name of amenity (required, maximum 50 characters)
-
-    Generates a unique identifier for amenity, records the creation update
-    timestamps, and initializes the list of locations associated with amenity.
-        """
         super().__init__(*args, **kwargs)
 
         if not name or not isinstance(name, str):
@@ -31,12 +24,6 @@ class Amenity(Base_class):
         self.places = []
 
     def add_place(self, place):
-        """
-    Add a place to the equipment and establish the bidirectional relationship.
-
-        Args:
-            place (Place): Place instance to add
-        """
         from app.models.place import Place
 
         if not isinstance(place, Place):
@@ -48,19 +35,10 @@ class Amenity(Base_class):
                 place.add_amenity(self)
 
     def remove_place(self, place):
-        """
-   Remove place from equipment and establish reverse bidirectional relationship
-
-        Args:
-            place (Place): Place instance to remove
-        """
         if place in self.places:
             self.places.remove(place)
             if self in place.amenities:
                 place.remove_amenity(self)
 
     def update_timestamp(self):
-        """
-        Update the `updated_at` timestamp when equipment is modified.
-        """
         self.updated_at = datetime.now()
