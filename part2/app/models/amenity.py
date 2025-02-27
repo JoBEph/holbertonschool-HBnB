@@ -8,13 +8,12 @@ Base_class = __import__("base_class").Baseclass
 class Amenity(Base_class):
     def __init__(self, name, *args, **kwargs):
         """
-        Initialiser une nouvelle instance d'Amenity avec les attributs nécessaires.
-        
+        Initialize a new instance of Amenity with the necessary attributes.
+
         Args:
-            name (str): Le nom de l'équipement (requis, maximum 50 caractères)
-        
-        Génère un identifiant unique pour l'équipement, enregistre les timestamps de création
-        et de mise à jour, et initialise la liste des lieux associés à l'équipement.
+            name (str): The name of the amenity (required, maximum 50 characters)
+
+            Generates a unique identifier for the amenity, records the creation and update timestamps, and initializes the list of locations associated with the amenity.
         """
         super().__init__(*args, **kwargs)
 
@@ -32,10 +31,10 @@ class Amenity(Base_class):
 
     def add_place(self, place):
         """
-        Ajouter un lieu à l'équipement et établir la relation bidirectionnelle.
+        Add a place to the equipment and establish the bidirectional relationship.
 
         Args:
-            place (Place): Instance de Lieu à ajouter
+            place (Place): Place instance to add
         """
         from app.models.place import Place
 
@@ -49,10 +48,10 @@ class Amenity(Base_class):
 
     def remove_place(self, place):
         """
-        Retirer un lieu de l'équipement et établir la relation bidirectionnelle inverse.
+        Remove a place from the equipment and establish the reverse bidirectional relationship.
 
         Args:
-            place (Place): Instance de Lieu à retirer
+            place (Place): Place instance to remove
         """
         if place in self.places:
             self.places.remove(place)
@@ -61,6 +60,6 @@ class Amenity(Base_class):
 
     def update_timestamp(self):
         """
-        Mettre à jour le timestamp `updated_at` lorsque l'équipement est modifié.
+        Update the `updated_at` timestamp when equipment is modified.
         """
         self.updated_at = datetime.now()
