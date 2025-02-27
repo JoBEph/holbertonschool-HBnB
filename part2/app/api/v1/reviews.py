@@ -1,3 +1,4 @@
+from flask import request, jsonify, abort
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 
@@ -18,14 +19,24 @@ class ReviewList(Resource):
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new review"""
-        # Placeholder for the logic to register a new review
-        pass
+        data = request.get_json()
+        if not data:
+            api.abort(400, desctiption='Invalid input data')
+
+        review = facade.create_review(data)
+        if not review:
+            api.abort(400, description= "error review")
+        
+        return jsonify(review), 201
+
 
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
         """Retrieve a list of all reviews"""
-        # Placeholder for logic to return a list of all reviews
-        pass
+        if not review_model:
+            api.abort(404, description='Review not found')
+        
+        return jsonify(review_model), 200
 
 @api.route('/<review_id>')
 class ReviewResource(Resource):
@@ -33,8 +44,10 @@ class ReviewResource(Resource):
     @api.response(404, 'Review not found')
     def get(self, review_id):
         """Get review details by ID"""
-        # Placeholder for the logic to retrieve a review by ID
-        pass
+        if not review_id:
+            api.abort(404, description='Review not found')
+
+        return jsonify(review_id), 200
 
     @api.expect(review_model)
     @api.response(200, 'Review updated successfully')
