@@ -45,9 +45,14 @@ def get_amenity(self, amenity_id):
     return Amenity.query.get(amenity_id)
 
 def get_all_amenities(self):
-    # Placeholder for logic to retrieve all amenities
-    pass
+    """Collect all equipment"""
+    return Amenity.query.all()
 
 def update_amenity(self, amenity_id, amenity_data):
-    # Placeholder for logic to update an amenity
-    pass
+        """Update existing equipment"""
+        amenity = Amenity.query.get(amenity_id)
+        if not amenity:
+            return None
+        amenity.name = name
+        db.session.commit()
+        return amenity
