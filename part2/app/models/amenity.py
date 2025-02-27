@@ -11,9 +11,10 @@ class Amenity(Base_class):
         Initialize a new instance of Amenity with the necessary attributes.
 
         Args:
-            name (str): The name of the amenity (required, maximum 50 characters)
+            name (str): The name of amenity (required, maximum 50 characters)
 
-            Generates a unique identifier for the amenity, records the creation and update timestamps, and initializes the list of locations associated with the amenity.
+    Generates a unique identifier for amenity, records the creation update
+    timestamps, and initializes the list of locations associated with amenity.
         """
         super().__init__(*args, **kwargs)
 
@@ -22,7 +23,7 @@ class Amenity(Base_class):
         if len(name) > 50:
             raise ValueError("The name of the amenity cannot exceed 50 characters")
 
-        self.id = str(uuid.uuid4())  
+        self.id = str(uuid.uuid4())
 
         self.name = name
         self.created_at = datetime.now()
@@ -31,7 +32,7 @@ class Amenity(Base_class):
 
     def add_place(self, place):
         """
-        Add a place to the equipment and establish the bidirectional relationship.
+    Add a place to the equipment and establish the bidirectional relationship.
 
         Args:
             place (Place): Place instance to add
@@ -48,7 +49,7 @@ class Amenity(Base_class):
 
     def remove_place(self, place):
         """
-        Remove a place from the equipment and establish the reverse bidirectional relationship.
+   Remove place from equipment and establish reverse bidirectional relationship
 
         Args:
             place (Place): Place instance to remove
