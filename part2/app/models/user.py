@@ -3,7 +3,7 @@
 This file provide an user class
 """
 import re
-from app.models.base_class import Baseclass
+from .base_class import Baseclass
 
 
 class User(Baseclass):
