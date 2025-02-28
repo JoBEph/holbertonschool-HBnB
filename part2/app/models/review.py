@@ -1,15 +1,14 @@
-from app.models.base_class import BaseClass
-from place import Place
-from user import User
+from app.models.base_class import Baseclass
+from app.models.place import Place
+from app.models.user import User
 
-
-class Review(BaseClass):
-    def __init__(self, text, rating, place, user):
+class Review(Baseclass):
+    def __init__(self, text, rating, place_id, user_id):
         super().__init__()
         self.text = text
         self.rating = rating
-        self.place = place
-        self.user = user
+        self.place = place_id
+        self.user = user_id
         self.validate()
 
     def validate(self):
@@ -23,34 +22,33 @@ class Review(BaseClass):
             raise ValueError('Error: User does not exist.')
         
     
-    def place_exist(self, obj_id):
-        place = place._storage.get(obj_id)
-        if place is None:
-            print(f'Place {obj_id} does not exist')
+    def  place_exist(self, obj_id):
+        if obj_id is None:
+            print(f"Place {obj_id} does not exist")
             return False
         else:
-            print(f'Place {obj_id} exist')
+            print(f"Place {obj_id} exist")
             return True
 
     def user_exist(self, obj_id):
         user = user._storage.get(obj_id)
         if user is None:
-            print(f'User {obj_id} does not exist')
+            print(f"User {obj_id} does not exist")
             return False
         else:
-            print(f'User {obj_id} exist')
+            print(f"User {obj_id} exist")
         return True
 
     def update_text(self, text):
         if self.text != text:
             self.text = text
-            self.updated_at = BaseClass.datetime.now()
+            self.updated_at = Baseclass.datetime.now()
             self.validate()
 
     def update_rating(self, rating):
         if self.rating != rating:
             self.rating = rating
-            self.updated_at = BaseClass.datetime.now()
+            self.updated_at = Baseclass.datetime.now()
             self.validate()
 
     def __str__(self):

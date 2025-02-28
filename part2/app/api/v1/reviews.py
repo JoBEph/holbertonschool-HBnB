@@ -19,13 +19,26 @@ class ReviewList(Resource):
     @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new review"""
-        data = request.get_json()
-        if not data:
+        review_data = api.payload
+        if not review_data:
             return {'Error': 'Invalid input data'}, 400
 
-        review = facade.create_review(data)
-        if not review:
-            return {'Error': 'Error creating review'}, 400
+        user_id = review_data.get('user_id')
+        if user_id:
+            user = facade.get_user(user_id)
+            if not user:
+                return {'Error': 'User not found'}, 400
+
+        # place_id = review_data.get('place_id')
+        # if place_id:
+        #     place = facade.get_place(place_id)
+        #     if not place:
+        #         return {'Error': 'Place not found'}, 400
+        try:
+            review = facade.create_review(review_data)
+        except (ValueError, TypeError) as error:
+            return {'Error': str(error)}, 400
+
 
         return jsonify(review), 201
 
