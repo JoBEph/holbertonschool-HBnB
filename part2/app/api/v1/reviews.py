@@ -41,7 +41,7 @@ class ReviewResource(Resource):
     @api.response(404, 'Review not found')
     def get(self, review_id):
         """Get review details by ID"""
-        review = facade.get_review(review_id)  # Corrected method name
+        review = facade.get_review(review_id)
         if not review:
             return {'Error': 'Review not found'}, 404
         return jsonify(review), 200
@@ -75,7 +75,7 @@ class PlaceReviewList(Resource):
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get all reviews for a specific place"""
-        reviews = facade.get_reviews_by_place(place_id) #Corrected method name
+        reviews = facade.get_reviews_by_place(place_id)
         if not reviews:
             return {'Error': 'Place not found or no reviews for this place'}, 404
         return jsonify(reviews), 200
