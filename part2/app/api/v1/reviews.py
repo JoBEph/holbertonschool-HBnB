@@ -1,4 +1,4 @@
-from flask import request, jsonify, abort
+from flask import request, jsonify
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 
@@ -21,22 +21,19 @@ class ReviewList(Resource):
         """Register a new review"""
         data = request.get_json()
         if not data:
-            api.abort(400, desctiption='Invalid input data')
+            return {'message': 'Invalid input data'}, 400
 
         review = facade.create_review(data)
         if not review:
-            api.abort(400, description= "error review")
-        
-        return jsonify(review), 201
+            return {'message': 'Error creating review'}, 400
 
+        return jsonify(review), 201
 
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
         """Retrieve a list of all reviews"""
-        if not review_model:
-            api.abort(404, description='Review not found')
-        
-        return jsonify(review_model), 200
+        reviews = facade.get_all_reviews()
+        return jsonify(reviews), 200
 
 @api.route('/<review_id>')
 class ReviewResource(Resource):
@@ -44,10 +41,10 @@ class ReviewResource(Resource):
     @api.response(404, 'Review not found')
     def get(self, review_id):
         """Get review details by ID"""
-        if not review_id:
-            api.abort(404, description='Review not found')
-
-        return jsonify(review_id), 200
+        review = facade.get_review_by_id(review_id)
+        if not review:
+            return {'message': 'Review not found'}, 404
+        return jsonify(review), 200
 
     @api.expect(review_model)
     @api.response(200, 'Review updated successfully')
@@ -55,15 +52,22 @@ class ReviewResource(Resource):
     @api.response(400, 'Invalid input data')
     def put(self, review_id):
         """Update a review's information"""
-        # Placeholder for the logic to update a review by ID
-        pass
+        data = request.get_json()
+        if not data:
+            return {'message': 'Invalid input data'}, 400
+        updated_review = facade.update_review(review_id, data)
+        if not updated_review:
+            return {'message': 'Review not found'}, 404
+        return jsonify(updated_review), 200
 
     @api.response(200, 'Review deleted successfully')
     @api.response(404, 'Review not found')
     def delete(self, review_id):
         """Delete a review"""
-        # Placeholder for the logic to delete a review
-        pass
+        deleted = facade.delete_review(review_id)
+        if not deleted:
+            return {'message': 'Review not found'}, 404
+        return jsonify({"message": "Review deleted"}), 200
 
 @api.route('/places/<place_id>/reviews')
 class PlaceReviewList(Resource):
@@ -71,5 +75,7 @@ class PlaceReviewList(Resource):
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get all reviews for a specific place"""
-        # Placeholder for logic to return a list of reviews for a place
-        pass
+        reviews = facade.get_reviews_by_place_id(place_id)
+        if not reviews:
+            return {'message': 'Place not found or no reviews for this place'}, 404
+        return jsonify(reviews), 200
