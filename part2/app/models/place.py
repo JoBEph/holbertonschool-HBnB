@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
-from base_class import Baseclass
-from user import User
+from app.models.base_class import Baseclass
+from app.models.user import User
 """
 Création class Place
 """
@@ -38,5 +38,5 @@ class Place(Baseclass):
         self.updated_at = datetime.now()
 
     def __str__(self):
-        return f"Place: {self.title}
+        return f"Place: {self.title} \
         (Owner: {self.owner.full_name() if self.owner else 'No Owner'})"

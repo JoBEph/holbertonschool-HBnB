@@ -1,5 +1,7 @@
 from app.models.user import User
 from app.models.review import Review
+# from app.models.place import Place
+# from app.models.amenity import Amenity
 from app.persistence.repository import InMemoryRepository
 
 class HBnBFacade:
@@ -7,6 +9,7 @@ class HBnBFacade:
         self.user_repo = InMemoryRepository()
         self.review_repo = InMemoryRepository()
 
+    # User methods
     def create_user(self, user_data):
         user = User(**user_data)
         self.user_repo.add(user)
@@ -18,6 +21,15 @@ class HBnBFacade:
     def get_user_by_email(self, email):
         return self.user_repo.get_by_attribute('email', email)
 
+    def get_all_users(self):
+        list_users = self.user_repo.get_all()
+        return [user.display() for user in list_users]
+
+    def update_user(self, user_id, user_data):
+        self.user_repo.update(user_id, user_data)
+        return self.user_repo.get(user_id)
+
+    # Review methods
     def create_review(self, review_data):
         review = Review(**review_data)
         self.review_repo.add(review)

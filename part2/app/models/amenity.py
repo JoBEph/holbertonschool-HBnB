@@ -1,8 +1,8 @@
 #!/usr/bin/python3
-Base_class = __import__("base_class").Baseclass
+from app.models.base_class import Baseclass
 
 
-class Amenity(Base_class):
+class Amenity(Baseclass):
     """
     Amenity class that defines attributes and methods for amenities.
     Inherits from Base_class which provides common attributes.

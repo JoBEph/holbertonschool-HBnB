@@ -20,8 +20,7 @@ class Review(Baseclass):
             raise ValueError('Error: Place does not exist.')
         if not isinstance(self.user, User):
             raise ValueError('Error: User does not exist.')
-        
-    
+
     def  place_exist(self, obj_id):
         if obj_id is None:
             print(f"Place {obj_id} does not exist")
