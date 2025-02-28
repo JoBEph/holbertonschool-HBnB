@@ -21,11 +21,11 @@ class ReviewList(Resource):
         """Register a new review"""
         data = request.get_json()
         if not data:
-            return {'message': 'Invalid input data'}, 400
+            return {'Error': 'Invalid input data'}, 400
 
         review = facade.create_review(data)
         if not review:
-            return {'message': 'Error creating review'}, 400
+            return {'Error': 'Error creating review'}, 400
 
         return jsonify(review), 201
 
@@ -41,9 +41,9 @@ class ReviewResource(Resource):
     @api.response(404, 'Review not found')
     def get(self, review_id):
         """Get review details by ID"""
-        review = facade.get_review_by_id(review_id)
+        review = facade.get_review(review_id)  # Corrected method name
         if not review:
-            return {'message': 'Review not found'}, 404
+            return {'Error': 'Review not found'}, 404
         return jsonify(review), 200
 
     @api.expect(review_model)
@@ -54,10 +54,10 @@ class ReviewResource(Resource):
         """Update a review's information"""
         data = request.get_json()
         if not data:
-            return {'message': 'Invalid input data'}, 400
+            return {'Error': 'Invalid input data'}, 400
         updated_review = facade.update_review(review_id, data)
         if not updated_review:
-            return {'message': 'Review not found'}, 404
+            return {'Error': 'Review not found'}, 404
         return jsonify(updated_review), 200
 
     @api.response(200, 'Review deleted successfully')
@@ -66,8 +66,8 @@ class ReviewResource(Resource):
         """Delete a review"""
         deleted = facade.delete_review(review_id)
         if not deleted:
-            return {'message': 'Review not found'}, 404
-        return jsonify({"message": "Review deleted"}), 200
+            return {'Error': 'Review not found'}, 404
+        return jsonify({"Error": "Review deleted"}), 200
 
 @api.route('/places/<place_id>/reviews')
 class PlaceReviewList(Resource):
@@ -75,7 +75,7 @@ class PlaceReviewList(Resource):
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get all reviews for a specific place"""
-        reviews = facade.get_reviews_by_place_id(place_id)
+        reviews = facade.get_reviews_by_place(place_id) #Corrected method name
         if not reviews:
-            return {'message': 'Place not found or no reviews for this place'}, 404
+            return {'Error': 'Place not found or no reviews for this place'}, 404
         return jsonify(reviews), 200
