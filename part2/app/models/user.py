@@ -71,13 +71,13 @@ class User(Baseclass):
             raise TypeError("Admin must be True or False")
         self._is_admin = value
 
-    @property
-    def place(self):
-        return self._place
+    # @property
+    # def place(self):
+    #     return self._place
 
-    @place.setter
-    def add_place(self, value):
-        self._place.append(value)
+    # @place.setter
+    # def add_place(self, value):
+    #     self._place.append(value)
 
     def display(self):
         return {

@@ -23,7 +23,7 @@ class ReviewList(Resource):
         if not review_data:
             return {'Error': 'Invalid input data'}, 400
 
-        user_id = review_data.get('user_id')
+        user_id = review_data.get('user')
         if user_id:
             user = facade.get_user(user_id)
             if not user:
@@ -82,13 +82,13 @@ class ReviewResource(Resource):
             return {'Error': 'Review not found'}, 404
         return jsonify({"Error": "Review deleted"}), 200
 
-@api.route('/places/<place_id>/reviews')
-class PlaceReviewList(Resource):
-    @api.response(200, 'List of reviews for the place retrieved successfully')
-    @api.response(404, 'Place not found')
-    def get(self, place_id):
-        """Get all reviews for a specific place"""
-        reviews = facade.get_reviews_by_place(place_id)
-        if not reviews:
-            return {'Error': 'Place not found or no reviews for this place'}, 404
-        return jsonify(reviews), 200
+# @api.route('/places/<place_id>/reviews')
+# class PlaceReviewList(Resource):
+#     @api.response(200, 'List of reviews for the place retrieved successfully')
+#     @api.response(404, 'Place not found')
+#     def get(self, place_id):
+#         """Get all reviews for a specific place"""
+#         reviews = facade.get_reviews_by_place(place_id)
+#         if not reviews:
+#             return {'Error': 'Place not found or no reviews for this place'}, 404
+#         return jsonify(reviews), 200

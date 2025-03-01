@@ -1,5 +1,5 @@
 from app.models.base_class import Baseclass
-from app.models.place import Place
+# from app.models.place import Place
 from app.models.user import User
 
 class Review(Baseclass):
@@ -16,18 +16,18 @@ class Review(Baseclass):
             raise ValueError('Error: Text is empty.')
         if not (1 <= self.rating <= 5):
             raise ValueError('Error: Choose between 1 and 5')
-        if not isinstance(self.place, Place):
-            raise ValueError('Error: Place does not exist.')
+        # if not isinstance(self.place, Place):
+        #     raise ValueError('Error: Place does not exist.')
         if not isinstance(self.user, User):
             raise ValueError('Error: User does not exist.')
 
-    def  place_exist(self, obj_id):
-        if obj_id is None:
-            print(f"Place {obj_id} does not exist")
-            return False
-        else:
-            print(f"Place {obj_id} exist")
-            return True
+    # def  place_exist(self, obj_id):
+    #     if obj_id is None:
+    #         print(f"Place {obj_id} does not exist")
+    #         return False
+    #     else:
+    #         print(f"Place {obj_id} exist")
+    #         return True
 
     def user_exist(self, obj_id):
         user = user._storage.get(obj_id)
