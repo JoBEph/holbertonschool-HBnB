@@ -8,6 +8,8 @@ class HBnBFacade:
     def __init__(self):
         self.user_repo = InMemoryRepository()
         self.review_repo = InMemoryRepository()
+        self.amenity_repo = InMemoryRepository()
+        self.place_repository = InMemoryRepository()
 
     # User methods
     def create_user(self, user_data):
@@ -31,6 +33,17 @@ class HBnBFacade:
 
     # Review methods
     def create_review(self, review_data):
+        user_id = review_data.get('user_id')
+        place_id = review_data.get('place_id')
+        rating = review_data.get('rating')
+
+        if not self.get_user(user_id):
+            raise ValueError(f"User with ID {user_id} not found")
+        if not self.get_place(place_id):
+            raise ValueError(f"Place with ID {place_id} not found")
+        if not (1 <= rating <= 5):
+            raise ValueError("Rating must be between 1 and 5")
+
         review = Review(**review_data)
         self.review_repo.add(review)
         return review
@@ -42,10 +55,23 @@ class HBnBFacade:
         return self.review_repo.get_all()
     
     def get_reviews_by_place(self, place_id):
-        return self.review_repo.get_by_attribute('place', place_id)
+        reviews = self.review_repo.get_all()
+        return [review for review in reviews if review.place == place_id]
     
     def update_review(self, review_id, data):
         review = self.review_repo.get(review_id)
+        if not review:
+            raise ValueError(f"Review with ID {review_id} not found")
+        user_id = data.get('user_id')
+        place_id = data.get('place_id')
+        rating = data.get('rating')
+        if not self.get_user(user_id):
+            raise ValueError(f"User with ID {user_id} not found")
+        if not self.get_place(place_id):
+            raise ValueError(f"Place with ID {place_id} not found")
+        if not (1 <= rating <= 5):
+            raise ValueError("Rating must be between 1 and 5")
+        
         review.update(data)
         return review
     
