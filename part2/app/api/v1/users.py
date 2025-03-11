@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
+import re
 
 api = Namespace('users', description='User operations')
 
@@ -23,6 +24,25 @@ class UserList(Resource):
         """Register a new user"""
         user_data = api.payload
 
+        if not user_data["first_name"] or not user_data["last_name"] or not user_data["email"]:
+            api.abort(400, "invalid input data")
+
+        if not user_data['first_name'] or not isinstance(user_data['first_name'], str):
+            api.abort(400, "first name must be a non-empty string")
+        
+        if not user_data['last_name'] or not isinstance(user_data['last_name'], str):
+            api.abort(400, "last name must be a non-empty string")
+
+        if not user_data['email'] or not isinstance(user_data['email'], str):
+            api.abort(400, "email is required")
+
+        if not isinstance(user_data['email'], str):
+            api.abort(400, "email must be a string")
+
+        email_pattern = r"^[a-zA-Z0-9_.-]+@[a-zA-Z-_]+\.[a-zA-Z]{2,}$"
+        if not re.match(email_pattern, user_data['email']):
+            api.abort(400, "Invalid input data: email format is incorrect")
+
         existing_user = facade.get_user_by_email(user_data['email'])
         if existing_user:
             api.abort(400, "Email already registred")
@@ -32,7 +52,7 @@ class UserList(Resource):
         except (ValueError, TypeError) as e:
             api.abort(400, str(e))
         
-        return new_user.display(), 200
+        return new_user.display(), 201
 
     @api.response(200, "Successfully retrieved list")
     def get(self):
@@ -75,6 +95,17 @@ class UserResource(Resource):
             user.update(user_data)
             updated_user = facade.update_user(user_id, user.display())
         except (ValueError, TypeError) as e:
-            api.abort(400, str(e))
+            api.abort(400, f"error: {str(e)}")
 
         return updated_user.display(), 201
+
+    @api.response(204, 'User successfully deleted')
+    @api.response(404, 'User not found')
+    def delete(self, user_id):
+        user = facade.get_user(user_id)
+        print(f"Tentative de suppression de l'utilisateur : {user}")
+        if not user:
+            return {'error': 'User not found'}, 404
+
+        facade.delete_user(user_id)
+        return '', 204

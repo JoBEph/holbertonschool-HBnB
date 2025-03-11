@@ -30,6 +30,10 @@ class HBnBFacade:
     def update_user(self, user_id, user_data):
         self.user_repo.update(user_id, user_data)
         return self.user_repo.get(user_id)
+    def delete_user(self, user_id):
+        user = self.user_repo.get(user_id)
+        self.user_repo.delete(user)
+        return user
 
     # Review methods
     def create_review(self, review_data):
@@ -103,6 +107,12 @@ class HBnBFacade:
 
     # Place methods
     def create_place(self, place_data):
+        owner_id = place_data.get('owner_id')
+        if not owner_id:
+            raise ValueError("Owner ID is required")
+        owner = self.get_user(owner_id)
+        if not owner:
+            raise ValueError(f"User with ID {owner_id} not found")
         try:
             place = Place(
                 title=place_data['title'],
@@ -110,10 +120,10 @@ class HBnBFacade:
                 price=place_data['price'],
                 latitude=place_data['latitude'],
                 longitude=place_data['longitude'],
-                owner_id=place_data['owner_id'],
+                owner=owner,
                 amenities=place_data['amenities']
             )
-            self.place_repository.save(place)
+            self.place_repository.add(place)
             return place
         except Exception as e:
             raise ValueError(f"Error creation place: {e}")

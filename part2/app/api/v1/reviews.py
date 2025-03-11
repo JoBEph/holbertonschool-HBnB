@@ -27,13 +27,18 @@ class ReviewList(Resource):
         if user_id:
             user = facade.get_user(user_id)
             if not user:
-                return {'Error': 'User not found'}, 400
+                return {'UserNotFound': 'User not found'}, 400
 
-        # place_id = review_data.get('place_id')
-        # if place_id:
-        #     place = facade.get_place(place_id)
-        #     if not place:
-        #         return {'Error': 'Place not found'}, 400
+        place_id = review_data.get('place_id')
+        if place_id:
+            place = facade.get_place(place_id)
+            if not place:
+                return {'PlaceNotFound': 'Place not found'}, 400
+        
+        rating = review_data.get('rating')
+        if not (1 <= rating <= 5):
+            return {'IvalidRating': 'Invalid rating. Choose between 1 and 5'}, 400
+        
         try:
             review = facade.create_review(review_data)
         except (ValueError, TypeError) as error:

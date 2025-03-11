@@ -16,7 +16,7 @@ class User(Baseclass):
         self.last_name = last_name
         self.email = email
         self.is_admin = is_admin
-        self.place = []
+        self._place = []
 
     @property
     def first_name(self):
@@ -24,10 +24,8 @@ class User(Baseclass):
 
     @first_name.setter
     def first_name(self, value):
-        if not isinstance(value, str):
-            raise TypeError("first name must be a string")
-        if not value:
-            raise TypeError("first name is required")
+        if not isinstance(value, str) or not value:
+            raise TypeError("first name must be a non-empty string")
         if len(value) > 50:
             raise ValueError("first name is too long")
         self._first_name = value
@@ -38,10 +36,8 @@ class User(Baseclass):
 
     @last_name.setter
     def last_name(self, value):
-        if not isinstance(value, str):
-            raise TypeError("last name must be a string")
-        if not value:
-            raise TypeError("last name is required")
+        if not isinstance(value, str) or not value:
+            raise TypeError("last name must be a non-empty string")
         if len(value) > 50:
             raise ValueError("last name is too long")
         self._last_name = value
@@ -52,13 +48,13 @@ class User(Baseclass):
 
     @email.setter
     def email(self, value):
-        pattern = r"^[a-zA-Z0-9_.-]+@[a-zA-Z-_]+\.[a-zA-Z]{2,}$"
-        if not isinstance(value, str):
-            raise TypeError("Email must be a string")
+        pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$"
         if not value:
-            raise TypeError("Email is required")
+            raise TypeError("email is required")
+        if not isinstance(value, str):
+            raise TypeError("email must be a string")
         if not re.match(pattern, value):
-            raise ValueError("Email is not valid")
+            raise ValueError("email format is incorrect")
         self._email = value
 
     @property
@@ -71,13 +67,12 @@ class User(Baseclass):
             raise TypeError("Admin must be True or False")
         self._is_admin = value
 
-    # @property
-    # def place(self):
-    #     return self._place
+    @property
+    def place(self):
+        return self._place
 
-    # @place.setter
-    # def add_place(self, value):
-    #     self._place.append(value)
+    def add_place(self, value):
+        self._place.append(value)
 
     def display(self):
         return {
