@@ -1,5 +1,4 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship
 from app.models.base_class import Baseclass
 from app.models.place import Place
 from app.models.user import User
