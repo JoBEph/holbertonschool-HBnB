@@ -12,11 +12,8 @@ class Review(Baseclass):
     id = Column(Integer, primary_key=True)
     text = Column(String)
     rating = Column(Integer)
-    place_id = Column(Integer, ForeignKey('places.id'), nullable=False)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-
-    place = relationship('Place', backref='reviews')
-    user = relationship('User', backref='reviews')
+    place_id = Column(Integer)
+    user_id = Column(Integer)
 
     def __init__(self, text, rating, place_id, user_id):
         super().__init__()
@@ -31,10 +28,6 @@ class Review(Baseclass):
             raise ValueError('Error: Text is empty.')
         if not (1 <= self.rating <= 5):
             raise ValueError('Error: Choose between 1 and 5')
-        if Place.query.get(self.place_id) is None:
-            raise ValueError('Error: Place does not exist')
-        if User.query.get(self.user_id) is None:
-            raise ValueError('Error: User does not exist')
 
     def update(self, text=None, rating=None, place_id=None, user_id=None):
         if text is not None:
@@ -51,5 +44,5 @@ class Review(Baseclass):
     def __str__(self):
         return (
             f'Review: (id={self.id}, text={self.text}, rating={self.rating}, '
-            f'place={self.place}, user={self.user})'
+            f'place_id={self.place_id}, user_id={self.user_id})'
         )
