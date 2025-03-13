@@ -20,6 +20,7 @@ class Baseclass:
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
 
+
     def save(self):
         """Update the updated_at timestamp whenever the object is modified"""
         self.updated_at = datetime.now()
