@@ -5,9 +5,12 @@ This file provide an user class
 import re
 from app import db, bcrypt
 from .base_class import Baseclass, BaseModel
-
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import relationship
 
 class User(BaseModel):
+
+    db = SQLAlchemy()
     __tablename__ = 'users'
 
     first_name = db.Column(db.String(50), nullable=False)
