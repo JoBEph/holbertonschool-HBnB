@@ -11,6 +11,7 @@ from sqlalchemy.orm import relationship
 class User(BaseModel):
 
     db = SQLAlchemy()
+
     __tablename__ = 'users'
 
     first_name = db.Column(db.String(50), nullable=False)
@@ -18,6 +19,10 @@ class User(BaseModel):
     email = db.Column(db.String(120), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
+    
+    places = relationship('Place', backref='owner')
+    reviews = relationship('Review', backref='user')
+    amenities = relationship('Amenity', backref='user')
 
     def hash_password(self, password):
         """Hash the password before storing it."""
