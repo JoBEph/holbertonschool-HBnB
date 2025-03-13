@@ -1,6 +1,7 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 import re
+from flask_jwt_extended import app, jwt_required, get_jwt_identity, Place, Review, db, jsonify, User, request
 
 api = Namespace('users', description='User operations')
 
@@ -109,3 +110,22 @@ class UserResource(Resource):
 
         facade.delete_user(user_id)
         return '', 204
+
+@app.route('/api/v1/users/<int:user_id>', methods=['PUT'])
+@jwt_required()
+def update_user(user_id):
+    current_user = get_jwt_identity()
+    
+    if current_user != user_id:
+        return jsonify({"error": "Non autorisé"}), 403
+
+    user = User.query.get(user_id)
+    data = request.get_json()
+
+    if "email" in data or "password" in data:
+        return jsonify({"error": "Modification de l'email et du mot de passe interdite"}), 403
+
+    user.name = data.get("name", user.name)
+    db.session.commit()
+
+    return jsonify({"message": "Informations utilisateur mises à jour"})

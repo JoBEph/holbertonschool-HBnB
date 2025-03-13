@@ -1,6 +1,7 @@
 from flask import request, jsonify
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
+from flask_jwt_extended import app, jwt_required, get_jwt_identity, Place, Review, db
 
 api = Namespace('reviews', description='Review operations')
 
@@ -97,3 +98,55 @@ class ReviewResource(Resource):
 #         if not reviews:
 #             return {'Error': 'Place not found or no reviews for this place'}, 404
 #         return jsonify(reviews), 200
+
+@app.route('/api/v1/reviews/', methods=['POST'])
+@jwt_required()
+def create_review():
+    current_user = get_jwt_identity()
+    data = request.get_json()
+    
+    place = Place.query.get(data["place_id"])
+    if not place:
+        return jsonify({"error": "Lieu non trouvé"}), 404
+    
+    if place.owner_id == current_user:
+        return jsonify({"error": "Vous ne pouvez pas évaluer votre propre lieu"}), 403
+    
+    existing_review = Review.query.filter_by(user_id=current_user, place_id=place.id).first()
+    if existing_review:
+        return jsonify({"error": "Vous avez déjà évalué ce lieu"}), 400
+    
+    new_review = Review(user_id=current_user, place_id=place.id, text=data["text"])
+    db.session.add(new_review)
+    db.session.commit()
+
+    return jsonify({"message": "Avis ajouté"}), 201
+
+@app.route('/api/v1/reviews/<int:review_id>', methods=['PUT'])
+@jwt_required()
+def update_review(review_id):
+    current_user = get_jwt_identity()
+    review = Review.query.get(review_id)
+
+    if not review or review.user_id != current_user:
+        return jsonify({"error": "Non autorisé"}), 403
+
+    data = request.get_json()
+    review.text = data.get("text", review.text)
+    db.session.commit()
+
+    return jsonify({"message": "Avis mis à jour"})
+
+@app.route('/api/v1/reviews/<int:review_id>', methods=['DELETE'])
+@jwt_required()
+def delete_review(review_id):
+    current_user = get_jwt_identity()
+    review = Review.query.get(review_id)
+
+    if not review or review.user_id != current_user:
+        return jsonify({"error": "Non autorisé"}), 403
+
+    db.session.delete(review)
+    db.session.commit()
+
+    return jsonify({"message": "Avis supprimé"})

@@ -1,5 +1,7 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import request, jsonify, Place, app, db
 
 api = Namespace('places', description='Place operations')
 
@@ -74,3 +76,30 @@ class PlaceResource(Resource):
             return updated_place, 200
         except ValueError as e:
             return {'Error': str(e)}, 400
+        
+@app.route('/api/v1/places/', methods=['POST'])
+@jwt_required()
+def create_place():
+    current_user = get_jwt_identity()
+    data = request.get_json()
+
+    new_place = Place(name=data["name"], owner_id=current_user)
+    db.session.add(new_place)
+    db.session.commit()
+    
+    return jsonify({"message": "Lieu créé", "id": new_place.id}), 201
+
+@app.route('/api/v1/places/<int:place_id>', methods=['PUT'])
+@jwt_required()
+def update_place(place_id):
+    current_user = get_jwt_identity()
+    place = Place.query.get(place_id)
+
+    if not place or place.owner_id != current_user:
+        return jsonify({"error": "Non autorisé"}), 403
+    
+    data = request.get_json()
+    place.name = data.get("name", place.name)
+    db.session.commit()
+
+    return jsonify({"message": "Lieu mis à jour"})

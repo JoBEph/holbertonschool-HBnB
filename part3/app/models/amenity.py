@@ -12,7 +12,6 @@ class Amenity(Baseclass):
     def __init__(self, *args, **kwargs):
         """Initialize an Amenity instance."""
         super().__init__(*args, **kwargs)
-#!/usr/bin/python3
 """This module for the Class Amenity"""
 from datetime import datetime
 import uuid
