@@ -3,17 +3,21 @@ from sqlalchemy.orm import relationship
 from app.models.base_class import Baseclass
 from app.models.place import Place
 from app.models.user import User
+from app import db, bcrypt
+from flask_sqlalchemy import SQLAlchemy
 
 
 class Review(Baseclass):
+    
+    db = SQLAlchemy()
 
     __tablename__ = 'reviews'
 
-    id = Column(Integer, primary_key=True)
-    text = Column(String)
-    rating = Column(Integer)
-    place_id = Column(Integer, ForeignKey('places.id'), nullable=False)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String(50), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    place_id = db.Column(db.Integer, ForeignKey('places.id'), nullable=False)
+    user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
 
     place = relationship('Place', backref='reviews')
     user = relationship('User', backref='reviews')
