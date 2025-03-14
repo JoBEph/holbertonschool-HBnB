@@ -14,48 +14,45 @@ user_model = api.model('User', {
     'email': fields.String(required=True, description='Email of the user')
 })
 
-
 @api.route('/')
 class UserList(Resource):
     @api.expect(user_model, validate=True)
-    @api.response(201, 'User successfully created')
+    @api.response(201, 'User created successfully')
     @api.response(400, 'Email already registered')
     @api.response(400, 'Invalid input data')
+    @jwt_required()
     def post(self):
         """Register a new user"""
         user_data = api.payload
 
         if not user_data["first_name"] or not user_data["last_name"] or not user_data["email"]:
-            api.abort(400, "invalid input data")
+            api.abort(400, "Invalid data")
 
         if not user_data['first_name'] or not isinstance(user_data['first_name'], str):
-            api.abort(400, "first name must be a non-empty string")
+            api.abort(400, "First name must be a non-empty string")
         
         if not user_data['last_name'] or not isinstance(user_data['last_name'], str):
-            api.abort(400, "last name must be a non-empty string")
+            api.abort(400, "Last name must be a non-empty string")
 
         if not user_data['email'] or not isinstance(user_data['email'], str):
-            api.abort(400, "email is required")
-
-        if not isinstance(user_data['email'], str):
-            api.abort(400, "email must be a string")
+            api.abort(400, "Email is required")
 
         email_pattern = r"^[a-zA-Z0-9_.-]+@[a-zA-Z-_]+\.[a-zA-Z]{2,}$"
         if not re.match(email_pattern, user_data['email']):
-            api.abort(400, "Invalid input data: email format is incorrect")
+            api.abort(400, "Invalid email format")
 
         existing_user = facade.get_user_by_email(user_data['email'])
         if existing_user:
-            api.abort(400, "Email already registred")
+            api.abort(400, "Email already registered")
 
         try:
             new_user = facade.create_user(user_data)
         except (ValueError, TypeError) as e:
             api.abort(400, str(e))
-        
+
         return new_user.display(), 201
 
-    @api.response(200, "Successfully retrieved list")
+    @api.response(200, "List of users retrieved successfully")
     def get(self):
         list_users = facade.get_all_users()
         return list_users
@@ -65,24 +62,25 @@ class UserResource(Resource):
     @api.response(200, 'User details retrieved successfully')
     @api.response(404, 'User not found')
     def get(self, user_id):
-        """Get user details by ID"""
+        """Get details of a user by ID"""
         user = facade.get_user(user_id)
         if not user:
             return {'error': 'User not found'}, 404
-
-        return {'id': user.id, 'first_name':
-                user.first_name, 'last_name':
-                user.last_name, 'email': user.email}, 200
+        return {'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email}, 200
 
     @api.expect(user_model)
-    @api.response(201, 'User successfully updated')
+    @api.response(201, 'User updated successfully')
     @api.response(404, 'User not found')
     @api.response(400, 'Email already registered')
-    @api.response(400, 'Invalid input data')
+    @api.response(400, 'Invalid data')
+    @jwt_required()
     def put(self, user_id):
-        """Update user"""
-        user_data = api.payload
+        """Update a user"""
+        current_user = get_jwt_identity()
+        if current_user != user_id:
+            return {'error': 'Unauthorized'}, 403
 
+        user_data = api.payload
         user = facade.get_user(user_id)
         if not user:
             return {'error': 'User not found'}, 404
@@ -96,36 +94,21 @@ class UserResource(Resource):
             user.update(user_data)
             updated_user = facade.update_user(user_id, user.display())
         except (ValueError, TypeError) as e:
-            api.abort(400, f"error: {str(e)}")
+            api.abort(400, f"Error: {str(e)}")
 
         return updated_user.display(), 201
 
-    @api.response(204, 'User successfully deleted')
+    @api.response(204, 'User deleted successfully')
     @api.response(404, 'User not found')
+    @jwt_required()
     def delete(self, user_id):
+        current_user = get_jwt_identity()
+        if current_user != user_id:
+            return {'error': 'Unauthorized'}, 403
+
         user = facade.get_user(user_id)
-        print(f"Tentative de suppression de l'utilisateur : {user}")
         if not user:
             return {'error': 'User not found'}, 404
 
         facade.delete_user(user_id)
         return '', 204
-
-@app.route('/api/v1/users/<int:user_id>', methods=['PUT'])
-@jwt_required()
-def update_user(user_id):
-    current_user = get_jwt_identity()
-    
-    if current_user != user_id:
-        return jsonify({"error": "Non autorisé"}), 403
-
-    user = User.query.get(user_id)
-    data = request.get_json()
-
-    if "email" in data or "password" in data:
-        return jsonify({"error": "Modification de l'email et du mot de passe interdite"}), 403
-
-    user.name = data.get("name", user.name)
-    db.session.commit()
-
-    return jsonify({"message": "Informations utilisateur mises à jour"})

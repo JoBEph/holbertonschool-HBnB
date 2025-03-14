@@ -1,7 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-from flask_jwt_extended import request, jsonify, Place, app, db
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 api = Namespace('places', description='Place operations')
 
@@ -32,8 +31,9 @@ place_model = api.model('Place', {
 @api.route('/')
 class PlaceList(Resource):
     @api.expect(place_model)
-    @api.response(201, 'Place successfully created')
-    @api.response(400, 'Invalid input data')
+    @api.response(201, 'Place created successfully')
+    @api.response(400, 'Invalid data')
+    @jwt_required()
     def post(self):
         """Register a new place"""
         place_data = api.payload
@@ -43,10 +43,9 @@ class PlaceList(Resource):
         except ValueError as e:
             return {'Error': str(e)}, 400
 
-
     @api.response(200, 'List of places retrieved successfully')
     def get(self):
-        """Retrieve a list of all places"""
+        """Retrieve the list of all places"""
         places = facade.get_all_places()
         return places, 200
 
@@ -55,8 +54,7 @@ class PlaceResource(Resource):
     @api.response(200, 'Place details retrieved successfully')
     @api.response(404, 'Place not found')
     def get(self, place_id):
-        """Get place details by ID"""
-        # Placeholder for the logic to retrieve a place by ID, including associated owner and amenities
+        """Get details of a place by ID"""
         try:
             place = facade.get_place_by_id(place_id)
             return place, 200
@@ -66,40 +64,33 @@ class PlaceResource(Resource):
     @api.expect(place_model)
     @api.response(200, 'Place updated successfully')
     @api.response(404, 'Place not found')
-    @api.response(400, 'Invalid input data')
+    @api.response(400, 'Invalid data')
+    @jwt_required()
     def put(self, place_id):
-        """Update a place's information"""
-        # Placeholder for the logic to update a place by ID
+        """Update a place"""
+        current_user = get_jwt_identity()
+        place = facade.get_place_by_id(place_id)
+
+        if not place or place.owner_id != current_user:
+            return {'error': 'Unauthorized'}, 403
+
         place_data = api.payload
         try:
             updated_place = facade.update_place(place_id, place_data)
             return updated_place, 200
         except ValueError as e:
             return {'Error': str(e)}, 400
-        
-@app.route('/api/v1/places/', methods=['POST'])
-@jwt_required()
-def create_place():
-    current_user = get_jwt_identity()
-    data = request.get_json()
 
-    new_place = Place(name=data["name"], owner_id=current_user)
-    db.session.add(new_place)
-    db.session.commit()
-    
-    return jsonify({"message": "Lieu créé", "id": new_place.id}), 201
+    @api.response(204, 'Place deleted successfully')
+    @api.response(404, 'Place not found')
+    @jwt_required()
+    def delete(self, place_id):
+        """Delete a place"""
+        current_user = get_jwt_identity()
+        place = facade.get_place_by_id(place_id)
 
-@app.route('/api/v1/places/<int:place_id>', methods=['PUT'])
-@jwt_required()
-def update_place(place_id):
-    current_user = get_jwt_identity()
-    place = Place.query.get(place_id)
+        if not place or place.owner_id != current_user:
+            return {'error': 'Unauthorized'}, 403
 
-    if not place or place.owner_id != current_user:
-        return jsonify({"error": "Non autorisé"}), 403
-    
-    data = request.get_json()
-    place.name = data.get("name", place.name)
-    db.session.commit()
-
-    return jsonify({"message": "Lieu mis à jour"})
+        facade.delete_place(place_id)
+        return '', 204
