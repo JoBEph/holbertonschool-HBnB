@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 from app.models.base_class import Baseclass
+from sqlalchemy import Column, Integer, String, ForeignKey
 
 
 class Amenity(Baseclass):
@@ -7,6 +8,11 @@ class Amenity(Baseclass):
     Amenity class that defines attributes and methods for amenities.
     Inherits from Base_class which provides common attributes.
     """
+    
+    db = SQLAlchemy()
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+
     name = ""
 
     def __init__(self, *args, **kwargs):
