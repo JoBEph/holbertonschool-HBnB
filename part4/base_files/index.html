@@ -5,24 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>List of Places</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/icon" href="./images/icon.png" />
 </head>
 <body>
     <header>
+        <div>
+            <a href="/"><img src="./images/logo.png" alt="logo"></a>
+        </div>
         <nav>
+            <a href="index.html" id="index-link">Home</a>
+            <a href="place.html" id="place-link">Places</a>
             <a href="login.html" id="login-link">Login</a>
         </nav>
     </header>
     <main>
+        <h1>Available Places</h1>
+
+        <div class="tabs">
+            <button class="tab-link active" data-category="all" aria-label="Show all places">All</button>
+            <button class="tab-link" data-category="houses" aria-label="Show Houses">Houses</button>
+            <button class="tab-link" data-category="cabins" aria-label="Show Cabins">Cabins</button>
+            <button class="tab-link" data-category="apartments" aria-label="Show Apartments">Apartments</button>
+        </div>
+
         <section id="filter">
             <label for="price-filter">Max Price:</label>
-            <select id="price-filter">
-                <!-- Options will be populated dynamically -->
+            <select id="price-filter" aria-label="Filter by maximum price">
+                <option value="all">All</option>
+                <option value="100">$100</option>
+                <option value="150">$150</option>
+                <option value="200">$200</option>
             </select>
         </section>
-        <section id="places-list">
-            <!-- List of places will be populated dynamically -->
+        <section id="places-list" class="places">
+            <div class="place-card beach active" data-id="1">
+                <h3>Beautiful Beach House</h3>
+                <img src="./images/beach house.jpg" class="borderimg" alt="Beach House" height="150">
+                <p>Price per night: $150</p>
+                <button class="details-button" aria-label="View details for Beautiful Beach House">View Details</button>
+            </div>
+            <article class="place-card cabins active" data-id="2">
+                <h3>Cozy Cabin</h3>
+                <img src="./images/cozy cabin.jpg" class="borderimg" alt="Cozy Cabin" height="150">
+                <p>Price per night: $100</p>
+                <button class="details-button" aria-label="View details for Cozy Cabin">View Details</button>
+            </article>
+            <article class="place-card apartments active" data-id="3">
+                <h3>Modern Apartment</h3>
+                <img src="./images/Modern Apartment.jpg" class="borderimg" alt="Modern Apartment" height="150">
+                <p>Price per night: $200</p>
+                <button class="details-button" aria-label="View details for Modern Apartment">View Details</button>
+            </article>
         </section>
     </main>
     <script src="scripts.js"></script>
+    <footer>
+        <p> © 2025 Hbnb Evolution, All rights reserved. </p>
+    </footer>
 </body>
 </html>
